@@ -1,25 +1,11 @@
 // Tic-Tac-Toe by Vlad Hadyak
 
-// Player template
-const player = function(mark, rowPos, colPos) {
-  const getPlayerMark = () => {
-    return mark;
-  }
-  return {getPlayerMark, rowPos, colPos};
-};
-
-const playerX = player("x", 0, 1);
-const playerO = player("0", 1, 0);
-
-
-
-
 
 // Create a game board
 const gameBoard = (function() {
   const rows = 3;
   const columns = 3;
-  const board = []
+  const board = [];
 
   // Create 3x3 array matrix
   for (i = 0; i < rows; i++) {
@@ -29,23 +15,52 @@ const gameBoard = (function() {
     };
   }; 
 
-
-
-  // Get index position of the player's mark
-  function extractValues({rowPos, colPos, getPlayerMark}) {               //Destructuring
-    board[rowPos][colPos] = getPlayerMark();
+  const getBoard = () => {
+    return board;
   };
-  
-  extractValues(playerX);
-  extractValues(playerO);
 
-
-
-
-
-  const getBoard = () => board;
-
-  return {getBoard}
+  return {getBoard};
 })();
 
-console.log(gameBoard.getBoard());
+
+const checkCoordinates = (function() {
+  let playerXPos = [];
+  let playerOPos = [];
+  let board = gameBoard.getBoard();                  
+
+  const playerX = (row, col, mark) => {
+    board[row][col] = mark;
+    playerXPos.push({row, col});
+  };
+
+  const playerO = (row, col, mark) => {
+    board[row][col] = mark;
+    playerOPos.push({row, col});
+  };
+
+  const matchCondition = () => {
+    for (let i = 0; i < playerXPos.length; i++) {
+      const xPos = playerXPos[i];
+      console.log(xPos);    // get all possible values entered by x, and check if any rows and cols match with other instances
+
+
+      for (let j = 0; j < playerOPos.length; j++) {
+        const oPos = playerOPos[j];
+        if ((xPos.row === oPos.row && xPos.col === oPos.col)) {
+          console.log("matched");
+        };
+      };
+    };
+  };
+
+  return {playerX, playerO, matchCondition};
+})();
+
+checkCoordinates.playerX(1, 2, "x");
+checkCoordinates.playerO(0, 2, "o");
+checkCoordinates.playerX(1, 1, "x");
+checkCoordinates.playerX(0, 2, "x");
+checkCoordinates.playerO(1, 0, "o");
+checkCoordinates.matchCondition();
+
+console.log(gameBoard.getBoard());    // Return updated board
