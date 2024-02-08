@@ -1,0 +1,18 @@
+body {
+  display: flex;
+  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.board-container {
+  border: 1px solid red;
+  display: grid;
+  grid-template-columns: repeat(3, 150px);
+  grid-template-rows: repeat(3, 150px);
+  gap: 10px;
+}
+
+.board-container > div {
+  border: 1px solid black;
+}
