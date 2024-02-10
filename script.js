@@ -1,8 +1,10 @@
 // Tic-Tac-Toe by Vlad Hadyak
 
 // Create a game board
+const cells = document.querySelectorAll(".board-container>div");
+let totalCellsFilled = 0;
+
 const gameBoard = (function() {
-  const cells = document.querySelectorAll(".board-container>div");
   const rows = 3;
   const columns = 3;
   const board = [];
@@ -15,6 +17,7 @@ const gameBoard = (function() {
     const cellIndex = Array.from(cells).indexOf(e.target);                          // Get index of each cell
     row = Math.floor(cellIndex / columns);
     col = cellIndex % columns;
+
     console.log(`row ${row}, column ${col}`);
 
     // Track the player's turn 
@@ -29,9 +32,10 @@ const gameBoard = (function() {
       checkCoordinates.playerO(row, col);                                           // Store the values in playerO  
       oBtn.removeEventListener("click", render);      
     };
-    
+
     console.log(board);
     isPlayerX = !isPlayerX;
+    totalCellsFilled++;
   };
 
   cells.forEach(cell => {
@@ -51,24 +55,39 @@ const gameBoard = (function() {
   return {getBoard};
 })();
 
+// If game ended, disable cells
+function disableAllCells() {
+  cells.forEach(cell => {
+    cell.style.pointerEvents = 'none';
+  });
+};
 
-
-// Check for duplicates
-const checkCoordinates = (function() {
+// Store player's coordinates
+const checkCoordinates = (function() {  
   let playerXPos = [];
   let playerOPos = [];
   let board = gameBoard.getBoard();
-
+ 
   const playerX = (row, col) => {
     board[row][col] = "x";                     
     playerXPos.push({row, col});   
-    playRound.isWinner(playerXPos);                                                 // Check if playerX is a winner
+
+    const xWon = playRound.isWinner(playerXPos);                                    // Check if playerX is a winner
+    if (xWon) {
+      console.log("X won");
+      disableAllCells();
+    };
   };
-  // Make sure X and O take turns
+
   const playerO = (row, col) => {
     board[row][col] = "o";   
     playerOPos.push({row, col});
-    playRound.isWinner(playerOPos);                                                 // Check if playerO is a winner
+
+    const oWon = playRound.isWinner(playerOPos);                                    // Check if playerO is a winner
+    if (oWon) {
+      console.log("O won");
+      disableAllCells();
+    };
   };
 
   return {playerOPos, playerXPos, playerX, playerO};
@@ -90,21 +109,51 @@ const playRound = (function() {
       colCounts[obj.col]++;
     });
 
-    // Check if entire row or col line up 
+    // Check if entire row or col lines up 
     for (let i = 0; i < 3; i++) {
-      if ((rowCounts[i] === 3 || colCounts[i] === 3)) {
-        console.log("WIN");
+      if (rowCounts[i] === 3 || colCounts[i] === 3) {
+
+        // Style the matching pattern
+        cells.forEach((cell, index) => {
+          const row = Math.floor(index / 3);
+          const col = index % 3;
+
+          if (rowCounts[i] === 3 && row === i) {
+            cell.classList.add('match-pattern');
+          };
+          if (colCounts[i] === 3 && col === i) {
+            cell.classList.add('match-pattern');
+          };
+        });
         return true;
       };
     };
 
     // Check if there is a diagonal pattern
     const isDiagonal = diagonalPattern.some(pattern => {
-      return pattern.every(([row, col]) => player.some(({row: r, col: c}) => row === r && col === c));
-    });
+      const match = pattern.every(([row, col]) =>
+        player.some(({ row: playerRow, col: playerCol }) => row === playerRow && col === playerCol)
+      );
 
+      if (match) {
+        pattern.forEach(([row, col]) => {
+          const index = row * 3 + col;                                              // Convert row-col into a single index to identify position of a cell
+          cells[index].classList.add('match-pattern');
+        });
+      };
+      return match;
+    });
+    
     if (isDiagonal) {
-      console.log("Diagonal match");      
+      console.log(`Diagonal match`);
+      return true;
+    };
+
+    // Check if there is tie after all 9 cells have been filled up
+    if (totalCellsFilled === 8) {
+      console.log("tie");
+      disableAllCells();
+      return;
     };
   };
   return {isWinner};
