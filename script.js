@@ -2,22 +2,36 @@
 
 // Create a game board
 const gameBoard = (function() {
+  const cells = document.querySelectorAll(".board-container>div");
   const rows = 3;
   const columns = 3;
   const board = [];
-  const cells = document.querySelectorAll(".board-container>div");
+
+  let isPlayerX = true;
   let row, col;
 
   // Get row-col coordinates of each button clicked
   const render = (e) => {
-    const cellIndex = Array.from(cells).indexOf(e.target);
+    const cellIndex = Array.from(cells).indexOf(e.target);                          // Get index of each cell
     row = Math.floor(cellIndex / columns);
     col = cellIndex % columns;
     console.log(`row ${row}, column ${col}`);
 
-    // Store the values in playerX and playerO
-    checkCoordinates.playerX(row, col);             
-    checkCoordinates.playerO(row, col);    
+    // Track the player's turn 
+    if (isPlayerX) { 
+      let xBtn = e.target;
+      xBtn.classList.add("addXStyle");                                              // Store the values in playerX  
+      checkCoordinates.playerX(row, col);           
+      xBtn.removeEventListener("click", render);                                    // Disable click event on same btn, after btn has been clicked
+    } else {
+      let oBtn = e.target;
+      oBtn.classList.add("addOStyle");
+      checkCoordinates.playerO(row, col);                                           // Store the values in playerO  
+      oBtn.removeEventListener("click", render);      
+    };
+    
+    console.log(board);
+    isPlayerX = !isPlayerX;
   };
 
   cells.forEach(cell => {
@@ -46,66 +60,24 @@ const checkCoordinates = (function() {
   let board = gameBoard.getBoard();
 
   const playerX = (row, col) => {
-    board[row][col] = "x";                      // Replace x with text content of the current button clicked
+    board[row][col] = "x";                     
     playerXPos.push({row, col});   
-    //console.log({row, col});
-    //console.log(playerXPos);
-    console.log(board);
+    playRound.isWinner(playerXPos);                                                 // Check if playerX is a winner
   };
   // Make sure X and O take turns
   const playerO = (row, col) => {
     board[row][col] = "o";   
     playerOPos.push({row, col});
+    playRound.isWinner(playerOPos);                                                 // Check if playerO is a winner
   };
 
-  const checkXOMatches = () => {
-    // If x match o and vice versa
-    for (let i = 0; i < playerXPos.length; i++) {
-      const xObj = playerXPos[i];
-
-      for (let j = 0; j < playerOPos.length; j++) {
-        const oObj = playerOPos[j];
-
-        if (xObj.row === oObj.row && xObj.col === oObj.col) {
-          return true;
-        };
-      };
-    };
-    return false;
-  };
-
-   // Check for o-o and x-x matches
-   const checkDuplicates = (positions) => {        // an array of objects for playerXPos / playerOPos
-    positions.sort((a, b) => {                    // compare one object with another of the same mark, and sort it
-      if (a.row !== b.row) {
-        return a.row - b.row;
-      } else {
-        return a.col - b.col;
-      };
-    });
-
-    for (let i = 0; i < positions.length - 1; i++) {
-      if (positions[i].row === positions[i + 1].row && 
-          positions[i].col === positions[i + 1].col) {
-        return true;
-      };
-    };
-    return false;
-  };
-
-  return {checkXOMatches, checkDuplicates, playerOPos, playerXPos, playerX, playerO};
+  return {playerOPos, playerXPos, playerX, playerO};
 })();
 
   
 
 const playRound = (function() {
-  let playerXPos = checkCoordinates.playerXPos;
-  let playerOPos = checkCoordinates.playerOPos;            
-  let isXOMatch = checkCoordinates.checkXOMatches();       
-
   const isWinner = (player) => {
-    let isDuplicate = checkCoordinates.checkDuplicates(player);                     // Check if a player has a duplicate mark
-
     const rowCounts = [0, 0, 0];
     const colCounts = [0, 0, 0];
     const diagonalPattern = [
@@ -118,45 +90,25 @@ const playRound = (function() {
       colCounts[obj.col]++;
     });
 
-    // check if entire row or col line up 
+    // Check if entire row or col line up 
     for (let i = 0; i < 3; i++) {
-      if ((rowCounts[i] === 3 || colCounts[i] === 3) && isDuplicate === false) {
+      if ((rowCounts[i] === 3 || colCounts[i] === 3)) {
+        console.log("WIN");
         return true;
       };
     };
 
-    // check if diagonally line up
-    const isDiagonal = diagonalPattern.some(diagonalPattern => {                      
-      return player.every((obj, index) => {              
-        return obj.row === diagonalPattern[index][0] && obj.col === diagonalPattern[index][1];             // Compare against predefined array 
-      });
+    // Check if there is a diagonal pattern
+    const isDiagonal = diagonalPattern.some(pattern => {
+      return pattern.every(([row, col]) => player.some(({row: r, col: c}) => row === r && col === c));
     });
 
-    if (isDiagonal && !isDuplicate && !isXOMatch) {
-      //console.log("diagonally match / no duplicates");
-      return true;
-    };
-
-    if (isDuplicate) {
-      //console.log("duplicate");
-    };
-
-    if (isXOMatch) {
-      //console.log("xo match");
+    if (isDiagonal) {
+      console.log("Diagonal match");      
     };
   };
-
-  if (isWinner(playerXPos)) {
-    //console.log(`X is a winner`);
-    // End game
-  };
-  if (isWinner(playerOPos)) {
-    //console.log(`O is a winner`);
-  };
-
   return {isWinner};
 })();
 
+
 console.log(gameBoard.getBoard());    // Return updated board
-
-
