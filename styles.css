@@ -16,3 +16,34 @@ body {
 .board-container > div {
   border: 1px solid black;
 }
+
+.board-container > div:hover {
+  background-color: antiquewhite;
+  cursor: pointer;
+}
+
+.addXStyle::after {
+  content: "X";
+}
+
+.addXStyle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+}
+
+.addOStyle::after{
+  content: "O";
+}
+
+.addOStyle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+}
+
+.match-pattern {
+  outline: 2px solid green;
+}
