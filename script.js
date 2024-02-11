@@ -5,36 +5,36 @@ const cells = document.querySelectorAll(".board-container>div");
 let totalCellsFilled = 0;
 
 const gameBoard = (function() {
-  const rows = 3;
-  const columns = 3;
-  const board = [];
-
+  const rows = 3;       //!!
+  const columns = 3;    //!!
+  const board = [];     //!!
+  
   let isPlayerX = true;
-  let row, col;
+
+  displayPlayerTurn("x"); // X goes first
 
   // Get row-col coordinates of each button clicked
   const render = (e) => {
     const cellIndex = Array.from(cells).indexOf(e.target);                          // Get index of each cell
-    row = Math.floor(cellIndex / columns);
-    col = cellIndex % columns;
-
-    console.log(`row ${row}, column ${col}`);
-
-    // Track the player's turn 
-    if (isPlayerX) { 
-      let xBtn = e.target;
-      xBtn.classList.add("addXStyle");                                              // Store the values in playerX  
-      checkCoordinates.playerX(row, col);           
-      xBtn.removeEventListener("click", render);                                    // Disable click event on same btn, after btn has been clicked
+    const row = Math.floor(cellIndex / columns);
+    const col = cellIndex % columns;
+    
+    // Track player's turn
+    if (isPlayerX) {
+      checkCoordinates.playerX(row, col);
+      e.target.classList.add("addXStyle");
     } else {
-      let oBtn = e.target;
-      oBtn.classList.add("addOStyle");
-      checkCoordinates.playerO(row, col);                                           // Store the values in playerO  
-      oBtn.removeEventListener("click", render);      
+      checkCoordinates.playerO(row, col);
+      e.target.classList.add("addOStyle");
     };
 
+    // Remove the click event from the cell that has already been clicked
+    e.target.removeEventListener("click", render);
+
+    console.log(`row ${row}, column ${col}`);
     console.log(board);
-    isPlayerX = !isPlayerX;
+
+    isPlayerX = !isPlayerX;                       
     totalCellsFilled++;
   };
 
@@ -42,7 +42,7 @@ const gameBoard = (function() {
     cell.addEventListener('click', render)
   });
 
-  // Create 3x3 array matrix 
+  // Create 3x3 array matrix (FOR DEBUGGING)
   for (i = 0; i < rows; i++) {
     board[i] = []; 
     for (j = 0; j < columns; j++) {
@@ -50,6 +50,7 @@ const gameBoard = (function() {
     };
   }; 
   
+  // For debugging
   const getBoard = () => board;
  
   return {getBoard};
@@ -62,38 +63,67 @@ function disableAllCells() {
   });
 };
 
+function displayWinner(hasWon) {
+  const result = document.querySelector(".result");
+  if (hasWon) {
+    result.textContent = `Player ${hasWon} won the game!`;
+  } else {
+    result.textContent = "It's a tie";
+  };
+};
+
+function displayPlayerTurn(turn) {
+  const turnText = document.querySelector(".turn");
+  turnText.textContent = turn === "x" ? "Player X's turn" 
+                       : turn === "o" ? "Player O's turn" 
+                       : "";
+};
+
 // Store player's coordinates
 const checkCoordinates = (function() {  
   let playerXPos = [];
   let playerOPos = [];
-  let board = gameBoard.getBoard();
- 
-  const playerX = (row, col) => {
-    board[row][col] = "x";                 // for debugging
-    playerXPos.push({row, col});   
+  let board = gameBoard.getBoard();  
+  
+  const updatePlayerMove = (playerPos, playerMark, nextPlayerTurn, row, col) => {
 
-    const xWon = playRound.isWinner(playerXPos);                                    // Check if playerX is a winner
-    if (xWon) {
-      console.log("X won");
+    // Store coordinates in playerXPos / playerOPos
+    playerPos.push({row, col});                                                                  
+
+    const isWinner = playRound.isWinner(playerPos);
+    const isTie = playRound.tieGame();
+
+    // If there is a winner ...
+    if (isWinner) {             
+      console.log(`Player ${playerMark} Won!`);                                                                
+      displayPlayerTurn();  
       disableAllCells();
+      displayWinner(playerMark);
+
+    // If game is tied ...
+    } else if (isTie) {                                                                           
+      console.log("TIE");
+      displayPlayerTurn();
+
+    // If game still in progress, display who goes next
+    } else {                                                                                       
+      displayPlayerTurn(nextPlayerTurn);                                                           
     };
+  };
+
+   // Get row-col coordinates from gameBoard.render, then pass it through updatePlayerMove()
+  const playerX = (row, col) => {
+    board[row][col] = "x";   // FOR DEBUGGING
+    updatePlayerMove(playerXPos, "X", "o", row, col);                              
   };
 
   const playerO = (row, col) => {
-    board[row][col] = "o";                 // for debugging
-    playerOPos.push({row, col});
-
-    const oWon = playRound.isWinner(playerOPos);                                    // Check if playerO is a winner
-    if (oWon) {
-      console.log("O won");
-      disableAllCells();
-    };
+    board[row][col] = "o";   //FOR DEBUGGING
+    updatePlayerMove(playerOPos, "O", "x", row, col);
   };
 
-  return {playerOPos, playerXPos, playerX, playerO};
+  return {playerXPos, playerOPos, playerX, playerO};
 })();
-
-  
 
 const playRound = (function() {
   const isWinner = (player) => {
@@ -119,7 +149,7 @@ const playRound = (function() {
           // Style the matching pattern
           if ((rowCounts[i] === 3 && row === i) || (colCounts[i] === 3 && col === i)) {
             cell.classList.add('match-pattern');
-            cell.classList.remove("default-border");                         
+            cell.classList.remove("default-border");                  
           };
         });
         return true;
@@ -129,7 +159,8 @@ const playRound = (function() {
     // Check if there is a diagonal pattern
     const isDiagonal = diagonalPattern.some(pattern => {
       const match = pattern.every(([row, col]) =>
-        player.some(({row: playerRow, col: playerCol}) => row === playerRow && col === playerCol)       // Compare predefined row-col with row-col chosen by player
+        // Compare predefined row-col with row-col chosen by player
+        player.some(({row: playerRow, col: playerCol}) => row === playerRow && col === playerCol)      
       );
 
       if (match) {
@@ -147,13 +178,15 @@ const playRound = (function() {
       console.log(`Diagonal match`);
       return true;
     };
+  };
 
-    // Check if there is tie after all 9 cells have been filled up
+   // Check if there is tie after all 9 cells have been filled up
+  const tieGame = () => {
     if (totalCellsFilled === 8) {
-      console.log("tie");
       disableAllCells();
-      return;
+      displayWinner();
+      return true;
     };
   };
-  return {isWinner};
+  return {isWinner, tieGame};
 })();
