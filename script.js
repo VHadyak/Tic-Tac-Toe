@@ -69,7 +69,7 @@ const checkCoordinates = (function() {
   let board = gameBoard.getBoard();
  
   const playerX = (row, col) => {
-    board[row][col] = "x";                     
+    board[row][col] = "x";                 // for debugging
     playerXPos.push({row, col});   
 
     const xWon = playRound.isWinner(playerXPos);                                    // Check if playerX is a winner
@@ -80,7 +80,7 @@ const checkCoordinates = (function() {
   };
 
   const playerO = (row, col) => {
-    board[row][col] = "o";   
+    board[row][col] = "o";                 // for debugging
     playerOPos.push({row, col});
 
     const oWon = playRound.isWinner(playerOPos);                                    // Check if playerO is a winner
@@ -111,18 +111,15 @@ const playRound = (function() {
 
     // Check if entire row or col lines up 
     for (let i = 0; i < 3; i++) {
-      if (rowCounts[i] === 3 || colCounts[i] === 3) {
-
-        // Style the matching pattern
+      if (rowCounts[i] === 3 || colCounts[i] === 3) {                               // End game if condition is met
         cells.forEach((cell, index) => {
           const row = Math.floor(index / 3);
           const col = index % 3;
 
-          if (rowCounts[i] === 3 && row === i) {
+          // Style the matching pattern
+          if ((rowCounts[i] === 3 && row === i) || (colCounts[i] === 3 && col === i)) {
             cell.classList.add('match-pattern');
-          };
-          if (colCounts[i] === 3 && col === i) {
-            cell.classList.add('match-pattern');
+            cell.classList.remove("default-border");                         
           };
         });
         return true;
@@ -132,13 +129,15 @@ const playRound = (function() {
     // Check if there is a diagonal pattern
     const isDiagonal = diagonalPattern.some(pattern => {
       const match = pattern.every(([row, col]) =>
-        player.some(({ row: playerRow, col: playerCol }) => row === playerRow && col === playerCol)
+        player.some(({row: playerRow, col: playerCol}) => row === playerRow && col === playerCol)       // Compare predefined row-col with row-col chosen by player
       );
 
       if (match) {
         pattern.forEach(([row, col]) => {
+          // Linear index formula
           const index = row * 3 + col;                                              // Convert row-col into a single index to identify position of a cell
           cells[index].classList.add('match-pattern');
+          cells[index].classList.remove("default-border");
         });
       };
       return match;
@@ -158,6 +157,3 @@ const playRound = (function() {
   };
   return {isWinner};
 })();
-
-
-console.log(gameBoard.getBoard());    // Return updated board
