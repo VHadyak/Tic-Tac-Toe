@@ -1,19 +1,37 @@
+
+:root {
+  box-sizing: border-box;
+}
+
 body {
   display: flex;
   min-height: 100vh;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.text-output {
+  display: flex;
+  gap: 20px;
+}
+
+.result, .turn {
+  border: 1px solid black;
+  width: 170px;
+  height: 20px;
+  text-align: center;
 }
 
 .board-container {
-  border: 1px solid red;
   display: grid;
   grid-template-columns: repeat(3, 150px);
   grid-template-rows: repeat(3, 150px);
   gap: 10px;
 }
 
-.board-container > div {
+.default-border {
   border: 1px solid black;
 }
 
@@ -45,5 +63,5 @@ body {
 }
 
 .match-pattern {
-  outline: 2px solid green;
+  border: 3px solid rgb(22, 9, 208);
 }
