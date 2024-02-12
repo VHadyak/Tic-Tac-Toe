@@ -1,8 +1,16 @@
 // Tic-Tac-Toe by Vlad Hadyak
 
 // Create a game board
-const cells = document.querySelectorAll(".board-container>div");
 let totalCellsFilled = 0;
+
+const cells = document.querySelectorAll(".board-container>div");
+const boardContainer = document.querySelector(".board-container");
+const result = document.querySelector(".result");
+const startBtn = document.querySelector(".start");
+
+boardContainer.style.display = "none";
+result.style.display = "none";
+
 
 const gameBoard = (function() {
   const rows = 3;       //!!
@@ -59,12 +67,13 @@ const gameBoard = (function() {
 // If game ended, disable cells
 function disableAllCells() {
   cells.forEach(cell => {
-    cell.style.pointerEvents = 'none';
+    cell.style.pointerEvents = "none";
   });
 };
 
+
+
 function displayWinner(hasWon) {
-  const result = document.querySelector(".result");
   if (hasWon) {
     result.textContent = `Player ${hasWon} won the game!`;
   } else {
@@ -73,8 +82,7 @@ function displayWinner(hasWon) {
 };
 
 function displayPlayerTurn(turn) {
-  const turnText = document.querySelector(".turn");
-  turnText.textContent = turn === "x" ? "Player X's turn" 
+  result.textContent = turn === "x" ? "Player X's turn" 
                        : turn === "o" ? "Player O's turn" 
                        : "";
 };
@@ -180,7 +188,7 @@ const playRound = (function() {
     };
   };
 
-   // Check if there is tie after all 9 cells have been filled up
+  // Check if there is tie after all 9 cells have been filled up
   const tieGame = () => {
     if (totalCellsFilled === 8) {
       disableAllCells();
@@ -190,3 +198,30 @@ const playRound = (function() {
   };
   return {isWinner, tieGame};
 })();
+
+
+
+const setupGame = (function() {
+
+  const displayUI = () => {
+    boardContainer.style.display = "grid";
+    result.style.display = "block";
+    startBtn.style.display = "none";
+  };
+
+  const init = () => {
+    startBtn.addEventListener("click", displayUI);
+  };
+
+  return {init};
+})();
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupGame.init();
+});
+
+
+// Create text inputs for players to enter their names and then display it     Player X: Enter a name,  Player O: Enter a name
+// Add a play button, remove UI gameboard before click event
+// Add a play again button after game is finished
+// After game is finished, keep track of player's score from previous round
