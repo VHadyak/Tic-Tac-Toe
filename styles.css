@@ -12,12 +12,61 @@ body {
   gap: 20px;
 }
 
+.setup-wrapper {
+  border: 1px solid black;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: center;
+}
+
+.players-input {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.x, .o {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 1.3rem;
+}
+
+.players-input span {
+  color: rgb(46, 37, 223);
+  font-weight: bold;
+}
+
+.start {
+ width: 150px;
+ height: 40px;
+ font-size: 1rem;
+}
+
+input[type=text]#playerX,
+input[type=text]#playerO {
+  border: none;
+  border-bottom: 1px solid black;
+  font-size: 1.2rem;
+  color: rgb(37, 21, 21);
+}
+
+input[type=text]#playerX:focus,
+input[type=text]#playerO:focus {
+  outline: none;
+}
+
+
+
+
 .text-output {
   display: flex;
   gap: 20px;
 }
 
-.result, .turn {
+.result {
   border: 1px solid black;
   width: 170px;
   height: 20px;
