@@ -59,8 +59,6 @@ input[type=text]#playerO:focus {
 }
 
 
-
-
 .text-output {
   display: flex;
   gap: 20px;

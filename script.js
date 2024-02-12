@@ -1,25 +1,40 @@
 // Tic-Tac-Toe by Vlad Hadyak
 
-// Create a game board
 let totalCellsFilled = 0;
 
 const cells = document.querySelectorAll(".board-container>div");
 const boardContainer = document.querySelector(".board-container");
 const result = document.querySelector(".result");
 const startBtn = document.querySelector(".start");
+const setupContainer = document.querySelector(".setup-wrapper");
 
 boardContainer.style.display = "none";
 result.style.display = "none";
 
+// Allow players to enter their names
+const setupGame = (function() {
+  const displayUI = () => {
+    boardContainer.style.display = "grid";
+    result.style.display = "block";
+    setupContainer.style.display = "none";
+ 
+    const nameXVal = document.querySelector("#playerX").value;
+    const nameOVal = document.querySelector("#playerO").value; 
 
+    displayPlayerTurn("x", nameXVal, nameOVal);                                     // After start game, "X" player goes first
+    checkCoordinates.getName(nameXVal, nameOVal);                           
+  };
+
+  startBtn.addEventListener("click", displayUI);
+})();
+
+// Create a game board
 const gameBoard = (function() {
   const rows = 3;       //!!
   const columns = 3;    //!!
   const board = [];     //!!
   
   let isPlayerX = true;
-
-  displayPlayerTurn("x"); // X goes first
 
   // Get row-col coordinates of each button clicked
   const render = (e) => {
@@ -64,73 +79,54 @@ const gameBoard = (function() {
   return {getBoard};
 })();
 
-// If game ended, disable cells
-function disableAllCells() {
-  cells.forEach(cell => {
-    cell.style.pointerEvents = "none";
-  });
-};
-
-
-
-function displayWinner(hasWon) {
-  if (hasWon) {
-    result.textContent = `Player ${hasWon} won the game!`;
-  } else {
-    result.textContent = "It's a tie";
-  };
-};
-
-function displayPlayerTurn(turn) {
-  result.textContent = turn === "x" ? "Player X's turn" 
-                       : turn === "o" ? "Player O's turn" 
-                       : "";
-};
-
 // Store player's coordinates
 const checkCoordinates = (function() {  
   let playerXPos = [];
   let playerOPos = [];
   let board = gameBoard.getBoard();  
-  
-  const updatePlayerMove = (playerPos, playerMark, nextPlayerTurn, row, col) => {
+  let playerName1, playerName2;
 
+  const getName = (nameXVal, nameOVal) => {
+    playerName1 = nameXVal; 
+    playerName2 = nameOVal;
+  };
+
+  const updatePlayerMove = (playerPos, winnerName, nextPlayerTurn, row, col) => {
     // Store coordinates in playerXPos / playerOPos
     playerPos.push({row, col});                                                                  
 
     const isWinner = playRound.isWinner(playerPos);
     const isTie = playRound.tieGame();
 
-    // If there is a winner ...
     if (isWinner) {             
-      console.log(`Player ${playerMark} Won!`);                                                                
+      console.log(`Player ${winnerName} Won!`);                                                                
       displayPlayerTurn();  
       disableAllCells();
-      displayWinner(playerMark);
+      displayWinner(winnerName);
 
-    // If game is tied ...
     } else if (isTie) {                                                                           
       console.log("TIE");
       displayPlayerTurn();
+      disableAllCells();
+      displayWinner();
 
-    // If game still in progress, display who goes next
     } else {                                                                                       
-      displayPlayerTurn(nextPlayerTurn);                                                           
+      displayPlayerTurn(nextPlayerTurn, playerName1, playerName2);     // If game still in progress, display who goes next           
     };
   };
 
    // Get row-col coordinates from gameBoard.render, then pass it through updatePlayerMove()
   const playerX = (row, col) => {
     board[row][col] = "x";   // FOR DEBUGGING
-    updatePlayerMove(playerXPos, "X", "o", row, col);                              
+    updatePlayerMove(playerXPos, playerName1, "o", row, col);                              
   };
 
   const playerO = (row, col) => {
     board[row][col] = "o";   //FOR DEBUGGING
-    updatePlayerMove(playerOPos, "O", "x", row, col);
+    updatePlayerMove(playerOPos, playerName2, "x", row, col);
   };
 
-  return {playerXPos, playerOPos, playerX, playerO};
+  return {getName, playerXPos, playerOPos, playerX, playerO};
 })();
 
 const playRound = (function() {
@@ -182,46 +178,40 @@ const playRound = (function() {
       return match;
     });
     
-    if (isDiagonal) {
-      console.log(`Diagonal match`);
-      return true;
-    };
+    if (isDiagonal) return true;
   };
 
   // Check if there is tie after all 9 cells have been filled up
   const tieGame = () => {
-    if (totalCellsFilled === 8) {
-      disableAllCells();
-      displayWinner();
-      return true;
-    };
+    if (totalCellsFilled === 8) return true;
   };
   return {isWinner, tieGame};
 })();
 
+// If game ended, disable cells
+function disableAllCells() {
+  cells.forEach(cell => {
+    cell.style.pointerEvents = "none";
+  });
+};
 
-
-const setupGame = (function() {
-
-  const displayUI = () => {
-    boardContainer.style.display = "grid";
-    result.style.display = "block";
-    startBtn.style.display = "none";
+function displayWinner(hasWon) {
+  if (hasWon) {
+    result.textContent = `${hasWon} won the game!`;
+  } else {
+    result.textContent = "It's a tie";
   };
+};
 
-  const init = () => {
-    startBtn.addEventListener("click", displayUI);
-  };
-
-  return {init};
-})();
-
-document.addEventListener("DOMContentLoaded", () => {
-  setupGame.init();
-});
+function displayPlayerTurn(turn, playerName1, playerName2) {
+  result.textContent = turn === "x" ? `X: ${playerName1}'s turn` 
+                       : turn === "o" ? `O: ${playerName2}'s turn` 
+                       : "";
+};
 
 
-// Create text inputs for players to enter their names and then display it     Player X: Enter a name,  Player O: Enter a name
-// Add a play button, remove UI gameboard before click event
+
+
+
 // Add a play again button after game is finished
 // After game is finished, keep track of player's score from previous round
