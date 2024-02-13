@@ -24,7 +24,7 @@ body {
 .players-input {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
 
 .x, .o {
@@ -53,11 +53,25 @@ input[type=text]#playerO {
   color: rgb(37, 21, 21);
 }
 
+input[type=text]#playerX.invalid-input-style,
+input[type=text]#playerO.invalid-input-style {
+  border-bottom: 1px solid red;
+}
+
 input[type=text]#playerX:focus,
 input[type=text]#playerO:focus {
   outline: none;
 }
 
+span.error-text {
+  color: red;
+  font-size: 1rem;
+  font-weight: 100;
+}
+
+.error-text {
+  visibility: hidden;
+}
 
 .text-output {
   display: flex;

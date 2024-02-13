@@ -14,15 +14,19 @@ result.style.display = "none";
 // Allow players to enter their names
 const setupGame = (function() {
   const displayUI = () => {
-    boardContainer.style.display = "grid";
-    result.style.display = "block";
-    setupContainer.style.display = "none";
  
     const nameXVal = document.querySelector("#playerX").value;
     const nameOVal = document.querySelector("#playerO").value; 
 
+    // If either inputs are empty, or same input values, game setup does not proceed
+    if (!validateNames(nameXVal, nameOVal)) return;
+
+    boardContainer.style.display = "grid";
+    result.style.display = "block";
+    setupContainer.style.display = "none";
+    
     displayPlayerTurn("x", nameXVal, nameOVal);                                     // After start game, "X" player goes first
-    checkCoordinates.getName(nameXVal, nameOVal);                           
+    checkCoordinates.getName(nameXVal, nameOVal);       
   };
 
   startBtn.addEventListener("click", displayUI);
@@ -209,9 +213,46 @@ function displayPlayerTurn(turn, playerName1, playerName2) {
                        : "";
 };
 
+function validateNames(nameXVal, nameOVal) {
+  const errorMsgX = document.querySelector(".x .error-text");
+  const errorMsgO = document.querySelector(".o .error-text");
+  const xInput = document.querySelector("input[type='text']#playerX");
+  const oInput = document.querySelector("input[type='text']#playerO");
+
+  // trim() to remove white-space
+  const trimmedNameXVal = nameXVal.trim();
+  const trimmedNameOVal = nameOVal.trim();
+
+  if (!trimmedNameXVal || !trimmedNameOVal) {
+    if (!trimmedNameXVal) {
+      showErrorMessage(errorMsgX, xInput, "Please enter a name");
+    };
+    if (!trimmedNameOVal) {
+      showErrorMessage(errorMsgO, oInput, "Please enter a name");
+    };
+    return false;
+  };
+
+  // If player names are the same
+  if (trimmedNameXVal === trimmedNameOVal) {
+    showErrorMessage(errorMsgX, xInput, "Player names must be different");
+    showErrorMessage(errorMsgO, oInput, "Player names must be different");
+    return false;
+  };
+
+  return true;
+};
+
+function showErrorMessage (errorMsg, inputElement, message) {
+  errorMsg.style.visibility = "visible";
+  errorMsg.textContent = message;
+  inputElement.classList.add("invalid-input-style");
+};
 
 
 
 
-// Add a play again button after game is finished
+
+
+// Add a play again button after game is finished  (modal box);
 // After game is finished, keep track of player's score from previous round
