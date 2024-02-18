@@ -94,6 +94,11 @@ span.error-text {
   backdrop-filter: blur(5px);
 }
 
+.score-wrapper {
+  display: flex;
+  gap: 70px;
+}
+
 .default-border {
   border: 1px solid black;
 }

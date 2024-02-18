@@ -9,6 +9,12 @@ const result = document.querySelector(".result");
 const startBtn = document.querySelector(".start");
 const setupContainer = document.querySelector(".setup-wrapper");
 
+const scoreDisplay = document.querySelector(".score-wrapper");
+const player1Score = document.querySelector(".player1-score");
+const drawScore = document.querySelector(".tie-score");
+const player2Score = document.querySelector(".player2-score");
+
+scoreDisplay.style.display = "none";
 boardContainer.style.display = "none";
 result.style.display = "none";
 
@@ -22,6 +28,7 @@ const setupGame = (function() {
     // If either inputs are empty, or same input values, game setup does not proceed
     if (!validateNames(nameXVal, nameOVal)) return;
 
+    scoreDisplay.style.display = "flex";
     boardContainer.style.display = "grid";
     result.style.display = "block";
     setupContainer.style.display = "none";
@@ -29,7 +36,11 @@ const setupGame = (function() {
     displayPlayerTurn("x", nameXVal, nameOVal);                                     // After start game, "X" player goes first
 
     checkCoordinates.getName(nameXVal, nameOVal);       
-    updateScore.getName(nameXVal, nameOVal);                                        
+    updateScore.getName(nameXVal, nameOVal);         
+    
+    player1Score.textContent = `${nameXVal}: 0`;
+    player2Score.textContent = `${nameOVal}: 0`;
+    drawScore.textContent = "Tie: 0";
   };
 
   startBtn.addEventListener("click", displayUI);
@@ -106,6 +117,10 @@ const checkCoordinates = (function() {
   let board = gameBoard.getBoard();  
   let playerName1, playerName2;
 
+  let score1 = 0;
+  let score2 = 0;
+  let tieScore = 0;
+
   const getName = (nameXVal, nameOVal) => {
     playerName1 = nameXVal; 
     playerName2 = nameOVal;
@@ -117,6 +132,8 @@ const checkCoordinates = (function() {
 
     const isWinner = playRound.isWinner(playerPos);
     const isTie = playRound.tieGame();
+
+    trackScore();
 
     if (isWinner) {             
       console.log(`Player ${winnerName} Won!`);                                                                
@@ -130,6 +147,8 @@ const checkCoordinates = (function() {
       displayPlayerTurn();
       disableAllCells();
       displayWinner();
+      tieScore++;
+      updateScore.tieScore(tieScore);
       updateScore.gameOverModal();
 
     } else {                                                                                    
@@ -137,15 +156,28 @@ const checkCoordinates = (function() {
     };
   };
 
+  const trackScore = () => {
+    const xWinner = playRound.isWinner(playerXPos);
+    const oWinner = playRound.isWinner(playerOPos);
+
+    if (xWinner) {
+      score1++;
+    } else if (oWinner) {
+      score2++;
+    };
+  };
+
    // Get row-col coordinates from gameBoard.render, then pass it through updatePlayerMove()
   const playerX = (row, col) => {
     board[row][col] = "x";   // FOR DEBUGGING
     updatePlayerMove(playerXPos, playerName1, "o", row, col);   
+    updateScore.playerXScore(score1);
   };
 
   const playerO = (row, col) => {
     board[row][col] = "o";   //FOR DEBUGGING
     updatePlayerMove(playerOPos, playerName2, "x", row, col);
+    updateScore.playerOScore(score2);
   };
 
   const resetCoordinates = () => {
@@ -232,20 +264,27 @@ const updateScore = (function() {
   };
 
   const resetGame = () => {
-    console.log("reset the board");
     removeData();
     dialog.close();
     displayPlayerTurn("x", player1, player2);
     resetClicked = true;
   };
 
-  //const trackScore = () => {
-    
-  //};
+  const playerXScore = (xScore) => {
+    player1Score.textContent = `${player1}: ${xScore}`;
+  };
+
+  const playerOScore = (oScore) => {
+    player2Score.textContent = `${player2}: ${oScore}`
+  };
+
+  const tieScore = (tieScore) => {
+    drawScore.textContent = `Tie: ${tieScore}`;
+  };
 
   playAgain.addEventListener("click", resetGame);
 
-  return {gameOverModal, resetGame, getName};
+  return {gameOverModal, resetGame, getName, playerXScore, playerOScore, tieScore};
 })();
 
 
