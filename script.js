@@ -1,6 +1,7 @@
 // Tic-Tac-Toe by Vlad Hadyak
 
 let totalCellsFilled = 0;
+let resetClicked = false;
 
 const cells = document.querySelectorAll(".board-container>div");
 const boardContainer = document.querySelector(".board-container");
@@ -26,7 +27,9 @@ const setupGame = (function() {
     setupContainer.style.display = "none";
     
     displayPlayerTurn("x", nameXVal, nameOVal);                                     // After start game, "X" player goes first
+
     checkCoordinates.getName(nameXVal, nameOVal);       
+    updateScore.getName(nameXVal, nameOVal);                                        
   };
 
   startBtn.addEventListener("click", displayUI);
@@ -45,29 +48,42 @@ const gameBoard = (function() {
     const cellIndex = Array.from(cells).indexOf(e.target);                          // Get index of each cell
     const row = Math.floor(cellIndex / columns);
     const col = cellIndex % columns;
-    
+
+    // After each round played, "X" always goes first
+    if (resetClicked) {
+      resetClicked = false;
+      isPlayerX = true;
+    };
+
     // Track player's turn
     if (isPlayerX) {
       checkCoordinates.playerX(row, col);
       e.target.classList.add("addXStyle");
+      isPlayerX = false;
     } else {
       checkCoordinates.playerO(row, col);
       e.target.classList.add("addOStyle");
+      isPlayerX = true;
     };
-
+     
     // Remove the click event from the cell that has already been clicked
     e.target.removeEventListener("click", render);
 
     console.log(`row ${row}, column ${col}`);
-    console.log(board);
-
-    isPlayerX = !isPlayerX;                       
+    console.log(board);    
+    
     totalCellsFilled++;
   };
 
   cells.forEach(cell => {
     cell.addEventListener('click', render)
   });
+
+  const addCellClickListener = () => {
+    cells.forEach(cell => {
+      cell.addEventListener('click', render);
+    });
+  };
 
   // Create 3x3 array matrix (FOR DEBUGGING)
   for (i = 0; i < rows; i++) {
@@ -80,7 +96,7 @@ const gameBoard = (function() {
   // For debugging
   const getBoard = () => board;
  
-  return {getBoard};
+  return {getBoard, addCellClickListener};
 })();
 
 // Store player's coordinates
@@ -107,22 +123,24 @@ const checkCoordinates = (function() {
       displayPlayerTurn();  
       disableAllCells();
       displayWinner(winnerName);
+      updateScore.gameOverModal();                                                  // Show modal after game is over
 
     } else if (isTie) {                                                                           
       console.log("TIE");
       displayPlayerTurn();
       disableAllCells();
       displayWinner();
+      updateScore.gameOverModal();
 
-    } else {                                                                                       
-      displayPlayerTurn(nextPlayerTurn, playerName1, playerName2);     // If game still in progress, display who goes next           
+    } else {                                                                                    
+      displayPlayerTurn(nextPlayerTurn, playerName1, playerName2);     // If game still in progress, display who goes next          
     };
   };
 
    // Get row-col coordinates from gameBoard.render, then pass it through updatePlayerMove()
   const playerX = (row, col) => {
     board[row][col] = "x";   // FOR DEBUGGING
-    updatePlayerMove(playerXPos, playerName1, "o", row, col);                              
+    updatePlayerMove(playerXPos, playerName1, "o", row, col);   
   };
 
   const playerO = (row, col) => {
@@ -130,7 +148,13 @@ const checkCoordinates = (function() {
     updatePlayerMove(playerOPos, playerName2, "x", row, col);
   };
 
-  return {getName, playerXPos, playerOPos, playerX, playerO};
+  const resetCoordinates = () => {
+    playerXPos = [];
+    playerOPos = [];
+    totalCellsFilled = 0;
+  };
+
+  return {getName, playerXPos, playerOPos, playerX, playerO, resetCoordinates};
 })();
 
 const playRound = (function() {
@@ -192,6 +216,52 @@ const playRound = (function() {
   return {isWinner, tieGame};
 })();
 
+const updateScore = (function() {
+  const dialog = document.querySelector("dialog");
+  const playAgain = document.querySelector(".play-again-btn");
+
+  let player1, player2;
+
+  const getName = (nameXVal, nameOVal) => {
+    player1 = nameXVal;
+    player2 = nameOVal;
+  };
+
+  const gameOverModal = () => {
+    dialog.showModal();
+  };
+
+  const resetGame = () => {
+    console.log("reset the board");
+    removeData();
+    dialog.close();
+    displayPlayerTurn("x", player1, player2);
+    resetClicked = true;
+  };
+
+  //const trackScore = () => {
+    
+  //};
+
+  playAgain.addEventListener("click", resetGame);
+
+  return {gameOverModal, resetGame, getName};
+})();
+
+
+
+
+function removeData() {
+  cells.forEach(cell => {
+    cell.style.pointerEvents = "auto";
+    cell.classList.remove("addXStyle");
+    cell.classList.remove("addOStyle");
+    cell.classList.replace("match-pattern", "default-border");
+  });
+  gameBoard.addCellClickListener();
+  checkCoordinates.resetCoordinates(); 
+};
+
 // If game ended, disable cells
 function disableAllCells() {
   cells.forEach(cell => {
@@ -251,8 +321,4 @@ function showErrorMessage (errorMsg, inputElement, message) {
 
 
 
-
-
-
-// Add a play again button after game is finished  (modal box);
 // After game is finished, keep track of player's score from previous round

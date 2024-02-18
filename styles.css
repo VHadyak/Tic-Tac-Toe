@@ -76,6 +76,7 @@ span.error-text {
 .text-output {
   display: flex;
   gap: 20px;
+  backdrop-filter: blur(5px);
 }
 
 .result {
@@ -90,6 +91,7 @@ span.error-text {
   grid-template-columns: repeat(3, 150px);
   grid-template-rows: repeat(3, 150px);
   gap: 10px;
+  backdrop-filter: blur(5px);
 }
 
 .default-border {
@@ -98,6 +100,39 @@ span.error-text {
 
 .board-container > div:hover {
   background-color: antiquewhite;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0; /* Start with 0 opacity */
+  }
+  to {
+    opacity: 1; /* End with 1 opacity */
+  }
+}
+
+dialog::backdrop {
+  background-image: linear-gradient(
+    45deg,
+    rgb(14, 14, 15),
+    rgb(14, 14, 15)
+  );
+  opacity: 0.5;
+}
+
+dialog {
+  border: 1px solid rgb(121, 135, 227);
+  background-color: rgb(0, 0, 0);
+  border-radius: 10px;
+  padding: 50px;
+  position: fixed;
+  animation: fadeIn 0.7s ease; 
+}
+
+.play-again-btn {
+  height: 30px;
+  width: 100px;
   cursor: pointer;
 }
 
