@@ -14,18 +14,19 @@ const player1Score = document.querySelector(".player1-score");
 const drawScore = document.querySelector(".tie-score");
 const player2Score = document.querySelector(".player2-score");
 
-scoreDisplay.style.display = "none";
-boardContainer.style.display = "none";
-result.style.display = "none";
+const hideUI = (function() {
+  scoreDisplay.style.display = "none";
+  boardContainer.style.display = "none";
+  result.style.display = "none";
+})();
 
-// Allow players to enter their names
+// Player names input display
 const setupGame = (function() {
   const displayUI = () => {
- 
     const nameXVal = document.querySelector("#playerX").value;
     const nameOVal = document.querySelector("#playerO").value; 
 
-    // If either inputs are empty, or same input values, game setup does not proceed
+    // If either input values are empty, or same input values, game setup does not proceed
     if (!validateNames(nameXVal, nameOVal)) return;
 
     scoreDisplay.style.display = "flex";
@@ -48,17 +49,14 @@ const setupGame = (function() {
 
 // Create a game board
 const gameBoard = (function() {
-  const rows = 3;       //!!
-  const columns = 3;    //!!
-  const board = [];     //!!
-  
+  // Player X always first
   let isPlayerX = true;
 
   // Get row-col coordinates of each button clicked
   const render = (e) => {
     const cellIndex = Array.from(cells).indexOf(e.target);                          // Get index of each cell
-    const row = Math.floor(cellIndex / columns);
-    const col = cellIndex % columns;
+    const row = Math.floor(cellIndex / 3);
+    const col = cellIndex % 3;
 
     // After each round played, "X" always goes first
     if (resetClicked) {
@@ -81,7 +79,6 @@ const gameBoard = (function() {
     e.target.removeEventListener("click", render);
 
     console.log(`row ${row}, column ${col}`);
-    console.log(board);    
     
     totalCellsFilled++;
   };
@@ -95,32 +92,22 @@ const gameBoard = (function() {
       cell.addEventListener('click', render);
     });
   };
-
-  // Create 3x3 array matrix (FOR DEBUGGING)
-  for (i = 0; i < rows; i++) {
-    board[i] = []; 
-    for (j = 0; j < columns; j++) {
-      board[i][j] = [];
-    };
-  }; 
-  
-  // For debugging
-  const getBoard = () => board;
  
-  return {getBoard, addCellClickListener};
+  return {addCellClickListener};
 })();
 
 // Store player's coordinates
 const checkCoordinates = (function() {  
   let playerXPos = [];
   let playerOPos = [];
-  let board = gameBoard.getBoard();  
+
   let playerName1, playerName2;
 
   let score1 = 0;
   let score2 = 0;
   let tieScore = 0;
 
+  // !!!!!!!
   const getName = (nameXVal, nameOVal) => {
     playerName1 = nameXVal; 
     playerName2 = nameOVal;
@@ -135,24 +122,17 @@ const checkCoordinates = (function() {
 
     trackScore();
 
-    if (isWinner) {             
-      console.log(`Player ${winnerName} Won!`);                                                                
-      displayPlayerTurn();  
+    if (isWinner || isTie) {                                                                          
       disableAllCells();
-      displayWinner(winnerName);
-      updateScore.gameOverModal();                                                  // Show modal after game is over
+      displayWinner(isWinner ? winnerName : undefined);  
 
-    } else if (isTie) {                                                                           
-      console.log("TIE");
-      displayPlayerTurn();
-      disableAllCells();
-      displayWinner();
-      tieScore++;
-      updateScore.tieScore(tieScore);
+      if (isTie && !isWinner) {                                                     // Only account for tie if all cells have been filled, and no winner
+        tieScore++;
+        updateScore.tieScore(tieScore);
+      };
       updateScore.gameOverModal();
-
     } else {                                                                                    
-      displayPlayerTurn(nextPlayerTurn, playerName1, playerName2);     // If game still in progress, display who goes next          
+      displayPlayerTurn(nextPlayerTurn, playerName1, playerName2);                  // If game still in progress, display who goes next          
     };
   };
 
@@ -167,15 +147,13 @@ const checkCoordinates = (function() {
     };
   };
 
-   // Get row-col coordinates from gameBoard.render, then pass it through updatePlayerMove()
+  // Get row-col coordinates from gameBoard.render, then pass it through updatePlayerMove()
   const playerX = (row, col) => {
-    board[row][col] = "x";   // FOR DEBUGGING
     updatePlayerMove(playerXPos, playerName1, "o", row, col);   
     updateScore.playerXScore(score1);
   };
 
   const playerO = (row, col) => {
-    board[row][col] = "o";   //FOR DEBUGGING
     updatePlayerMove(playerOPos, playerName2, "x", row, col);
     updateScore.playerOScore(score2);
   };
@@ -287,9 +265,6 @@ const updateScore = (function() {
   return {gameOverModal, resetGame, getName, playerXScore, playerOScore, tieScore};
 })();
 
-
-
-
 function removeData() {
   cells.forEach(cell => {
     cell.style.pointerEvents = "auto";
@@ -297,7 +272,7 @@ function removeData() {
     cell.classList.remove("addOStyle");
     cell.classList.replace("match-pattern", "default-border");
   });
-  gameBoard.addCellClickListener();
+  gameBoard.addCellClickListener();                                                 // Reenable all cells after each new round
   checkCoordinates.resetCoordinates(); 
 };
 
@@ -352,9 +327,9 @@ function validateNames(nameXVal, nameOVal) {
   return true;
 };
 
-function showErrorMessage (errorMsg, inputElement, message) {
+function showErrorMessage (errorMsg, inputElement, msg) {
   errorMsg.style.visibility = "visible";
-  errorMsg.textContent = message;
+  errorMsg.textContent = msg;
   inputElement.classList.add("invalid-input-style");
 };
 
