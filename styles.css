@@ -27,6 +27,11 @@ body {
   gap: 15px;
 }
 
+input[type="text"]::placeholder {
+  color: rgba(193, 190, 190, 0.801);
+  font-size: 1rem;
+}
+
 .x, .o {
   display: flex;
   flex-direction: column;
@@ -135,7 +140,13 @@ dialog {
   animation: fadeIn 0.7s ease; 
 }
 
-.play-again-btn {
+.modal-wrapper {
+  display: flex;
+  gap: 30px;
+}
+
+.play-again-btn,
+.quit-btn {
   height: 30px;
   width: 100px;
   cursor: pointer;

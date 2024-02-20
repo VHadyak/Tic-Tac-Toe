@@ -11,14 +11,15 @@ const setupContainer = document.querySelector(".setup-wrapper");
 
 const scoreDisplay = document.querySelector(".score-wrapper");
 const player1Score = document.querySelector(".player1-score");
-const drawScore = document.querySelector(".tie-score");
 const player2Score = document.querySelector(".player2-score");
+const drawScore = document.querySelector(".tie-score");
 
-const hideUI = (function() {
+const hideUI = function() {
   scoreDisplay.style.display = "none";
   boardContainer.style.display = "none";
   result.style.display = "none";
-})();
+};
+hideUI();
 
 // Player names input display
 const setupGame = (function() {
@@ -26,8 +27,11 @@ const setupGame = (function() {
     const nameXVal = document.querySelector("#playerX").value;
     const nameOVal = document.querySelector("#playerO").value; 
 
-    // If either input values are empty, or same input values, game setup does not proceed
-    if (!validateNames(nameXVal, nameOVal)) return;
+    if (!validateNames(nameXVal, nameOVal).invalidHandler()) {
+      return;                                                                       // If either input values are empty, or same input values, game setup does not proceed  
+    } else {
+      validateNames(nameXVal, nameOVal).clearErrorState();
+    };
 
     scoreDisplay.style.display = "flex";
     boardContainer.style.display = "grid";
@@ -35,9 +39,7 @@ const setupGame = (function() {
     setupContainer.style.display = "none";
     
     displayPlayerTurn("x", nameXVal, nameOVal);                                     // After start game, "X" player goes first
-
-    checkCoordinates.getName(nameXVal, nameOVal);       
-    updateScore.getName(nameXVal, nameOVal);         
+    checkCoordinates.getName(nameXVal, nameOVal);           
     
     player1Score.textContent = `${nameXVal}: 0`;
     player2Score.textContent = `${nameOVal}: 0`;
@@ -46,6 +48,53 @@ const setupGame = (function() {
 
   startBtn.addEventListener("click", displayUI);
 })();
+
+const validateNames = (nameXVal, nameOVal) => {
+  const errorMsgX = document.querySelector(".x .error-text");
+  const errorMsgO = document.querySelector(".o .error-text");
+  const xInput = document.querySelector("input[type='text']#playerX");
+  const oInput = document.querySelector("input[type='text']#playerO");
+
+  // trim() to remove white-space
+  const trimmedNameXVal = nameXVal.trim();
+  const trimmedNameOVal = nameOVal.trim();
+
+  const showErrorMessage = (errorMsg, inputElement, msg) => {
+    errorMsg.style.visibility = "visible";
+    errorMsg.textContent = msg;
+    inputElement.classList.add("invalid-input-style");
+  };
+
+  // Log error if name is empty or same values
+  const invalidHandler = () => {
+    if (!trimmedNameXVal || !trimmedNameOVal) {
+      if (!trimmedNameXVal) {
+        showErrorMessage(errorMsgX, xInput, "Please enter a name");
+      };
+      if (!trimmedNameOVal) {
+        showErrorMessage(errorMsgO, oInput, "Please enter a name");
+      };
+      return false;
+    };
+  
+    // If player names are the same
+    if (trimmedNameXVal === trimmedNameOVal) {
+      showErrorMessage(errorMsgX, xInput, "Player names must be different");
+      showErrorMessage(errorMsgO, oInput, "Player names must be different");
+      return false;
+    };
+    return true;
+  };
+
+  const clearErrorState = () => {
+    errorMsgX.style.visibility = "hidden";
+    errorMsgO.style.visibility = "hidden";
+    xInput.classList.remove("invalid-input-style");
+    oInput.classList.remove("invalid-input-style");
+  };
+
+  return {invalidHandler, clearErrorState};
+};
 
 // Create a game board
 const gameBoard = (function() {
@@ -96,18 +145,21 @@ const gameBoard = (function() {
   return {addCellClickListener};
 })();
 
-// Store player's coordinates
+// Store player's coordinates and track score
 const checkCoordinates = (function() {  
+  const playAgain = document.querySelector(".play-again-btn");
+  const quitBtn = document.querySelector(".quit-btn");
+
   let playerXPos = [];
   let playerOPos = [];
 
   let playerName1, playerName2;
 
-  let score1 = 0;
-  let score2 = 0;
+  let scoreX = 0;
+  let scoreO = 0;
   let tieScore = 0;
 
-  // !!!!!!!
+  // Get player names
   const getName = (nameXVal, nameOVal) => {
     playerName1 = nameXVal; 
     playerName2 = nameOVal;
@@ -141,21 +193,21 @@ const checkCoordinates = (function() {
     const oWinner = playRound.isWinner(playerOPos);
 
     if (xWinner) {
-      score1++;
+      scoreX++;
     } else if (oWinner) {
-      score2++;
+      scoreO++;
     };
   };
 
   // Get row-col coordinates from gameBoard.render, then pass it through updatePlayerMove()
   const playerX = (row, col) => {
     updatePlayerMove(playerXPos, playerName1, "o", row, col);   
-    updateScore.playerXScore(score1);
+    updateScore.playerXScore(scoreX, playerName1);
   };
 
   const playerO = (row, col) => {
     updatePlayerMove(playerOPos, playerName2, "x", row, col);
-    updateScore.playerOScore(score2);
+    updateScore.playerOScore(scoreO, playerName2);
   };
 
   const resetCoordinates = () => {
@@ -164,9 +216,46 @@ const checkCoordinates = (function() {
     totalCellsFilled = 0;
   };
 
-  return {getName, playerXPos, playerOPos, playerX, playerO, resetCoordinates};
+  const resetScore = () => {
+    scoreX = 0;
+    scoreO = 0;
+    tieScore = 0;
+  };
+
+  const resetGame = () => {
+    displayPlayerTurn("x", playerName1, playerName2);
+
+    removeData();
+    resetCoordinates();
+    updateScore.closeModal();
+
+    resetClicked = true;
+  };
+
+  const quitGame = () => {
+    const player1Name = document.querySelector("#playerX");
+    const player2Name = document.querySelector("#playerO"); 
+
+    setupContainer.style.display = "flex";
+    player1Name.value = "";
+    player2Name.value = "";
+
+    hideUI();
+    removeData();
+    resetCoordinates();
+    resetScore();
+    updateScore.closeModal();
+
+    resetClicked = true;
+  };
+
+  playAgain.addEventListener("click", resetGame);
+  quitBtn.addEventListener("click", quitGame);
+
+  return {getName, playerXPos, playerOPos, playerX, playerO};
 })();
 
+// Check for winning patterns
 const playRound = (function() {
   const isWinner = (player) => {
     const rowCounts = [0, 0, 0];
@@ -226,33 +315,18 @@ const playRound = (function() {
   return {isWinner, tieGame};
 })();
 
+// Integrate updated score into DOM
 const updateScore = (function() {
   const dialog = document.querySelector("dialog");
-  const playAgain = document.querySelector(".play-again-btn");
 
-  let player1, player2;
+  const gameOverModal = () => dialog.showModal();
+  const closeModal = () => dialog.close();
 
-  const getName = (nameXVal, nameOVal) => {
-    player1 = nameXVal;
-    player2 = nameOVal;
-  };
-
-  const gameOverModal = () => {
-    dialog.showModal();
-  };
-
-  const resetGame = () => {
-    removeData();
-    dialog.close();
-    displayPlayerTurn("x", player1, player2);
-    resetClicked = true;
-  };
-
-  const playerXScore = (xScore) => {
+  const playerXScore = (xScore, player1) => {
     player1Score.textContent = `${player1}: ${xScore}`;
   };
 
-  const playerOScore = (oScore) => {
+  const playerOScore = (oScore, player2) => {
     player2Score.textContent = `${player2}: ${oScore}`
   };
 
@@ -260,9 +334,7 @@ const updateScore = (function() {
     drawScore.textContent = `Tie: ${tieScore}`;
   };
 
-  playAgain.addEventListener("click", resetGame);
-
-  return {gameOverModal, resetGame, getName, playerXScore, playerOScore, tieScore};
+  return {gameOverModal, closeModal, playerXScore, playerOScore, tieScore};
 })();
 
 function removeData() {
@@ -273,10 +345,9 @@ function removeData() {
     cell.classList.replace("match-pattern", "default-border");
   });
   gameBoard.addCellClickListener();                                                 // Reenable all cells after each new round
-  checkCoordinates.resetCoordinates(); 
 };
 
-// If game ended, disable cells
+// If game ended, disable cells (optional!!! modal shows up after game is over)
 function disableAllCells() {
   cells.forEach(cell => {
     cell.style.pointerEvents = "none";
@@ -296,43 +367,3 @@ function displayPlayerTurn(turn, playerName1, playerName2) {
                        : turn === "o" ? `O: ${playerName2}'s turn` 
                        : "";
 };
-
-function validateNames(nameXVal, nameOVal) {
-  const errorMsgX = document.querySelector(".x .error-text");
-  const errorMsgO = document.querySelector(".o .error-text");
-  const xInput = document.querySelector("input[type='text']#playerX");
-  const oInput = document.querySelector("input[type='text']#playerO");
-
-  // trim() to remove white-space
-  const trimmedNameXVal = nameXVal.trim();
-  const trimmedNameOVal = nameOVal.trim();
-
-  if (!trimmedNameXVal || !trimmedNameOVal) {
-    if (!trimmedNameXVal) {
-      showErrorMessage(errorMsgX, xInput, "Please enter a name");
-    };
-    if (!trimmedNameOVal) {
-      showErrorMessage(errorMsgO, oInput, "Please enter a name");
-    };
-    return false;
-  };
-
-  // If player names are the same
-  if (trimmedNameXVal === trimmedNameOVal) {
-    showErrorMessage(errorMsgX, xInput, "Player names must be different");
-    showErrorMessage(errorMsgO, oInput, "Player names must be different");
-    return false;
-  };
-
-  return true;
-};
-
-function showErrorMessage (errorMsg, inputElement, msg) {
-  errorMsg.style.visibility = "visible";
-  errorMsg.textContent = msg;
-  inputElement.classList.add("invalid-input-style");
-};
-
-
-
-// After game is finished, keep track of player's score from previous round
