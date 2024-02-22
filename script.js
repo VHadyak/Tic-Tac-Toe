@@ -5,7 +5,8 @@ let resetClicked = false;
 
 const cells = document.querySelectorAll(".board-container>div");
 const boardContainer = document.querySelector(".board-container");
-const result = document.querySelector(".result");
+const displayTurn = document.querySelector(".display-turn");
+const winnerDisplay = document.querySelector(".winner-display");
 const startBtn = document.querySelector(".start");
 const setupContainer = document.querySelector(".setup-wrapper");
 
@@ -17,7 +18,7 @@ const drawScore = document.querySelector(".tie-score");
 const hideUI = function() {
   scoreDisplay.style.display = "none";
   boardContainer.style.display = "none";
-  result.style.display = "none";
+  displayTurn.style.display = "none";
 };
 hideUI();
 
@@ -35,7 +36,7 @@ const setupGame = (function() {
 
     scoreDisplay.style.display = "flex";
     boardContainer.style.display = "grid";
-    result.style.display = "block";
+    displayTurn.style.display = "block";
     setupContainer.style.display = "none";
     
     displayPlayerTurn("x", nameXVal, nameOVal);                                     // After start game, "X" player goes first
@@ -56,8 +57,8 @@ const validateNames = (nameXVal, nameOVal) => {
   const oInput = document.querySelector("input[type='text']#playerO");
 
   // trim() to remove white-space
-  const trimmedNameXVal = nameXVal.trim();
-  const trimmedNameOVal = nameOVal.trim();
+  const playerNameX = nameXVal.trim();
+  const playerNameO = nameOVal.trim();
 
   const showErrorMessage = (errorMsg, inputElement, msg) => {
     errorMsg.style.visibility = "visible";
@@ -65,20 +66,20 @@ const validateNames = (nameXVal, nameOVal) => {
     inputElement.classList.add("invalid-input-style");
   };
 
-  // Log error if name is empty or same values
+  // Log error if name is empty
   const invalidHandler = () => {
-    if (!trimmedNameXVal || !trimmedNameOVal) {
-      if (!trimmedNameXVal) {
+    if (!playerNameX || !playerNameO) {
+      if (!playerNameX) {
         showErrorMessage(errorMsgX, xInput, "Please enter a name");
       };
-      if (!trimmedNameOVal) {
+      if (!playerNameO) {
         showErrorMessage(errorMsgO, oInput, "Please enter a name");
       };
       return false;
     };
   
     // If player names are the same
-    if (trimmedNameXVal === trimmedNameOVal) {
+    if (playerNameX === playerNameO) {
       showErrorMessage(errorMsgX, xInput, "Player names must be different");
       showErrorMessage(errorMsgO, oInput, "Player names must be different");
       return false;
@@ -159,7 +160,7 @@ const checkCoordinates = (function() {
   let scoreO = 0;
   let tieScore = 0;
 
-  // Get player names
+  // Retrieve player names 
   const getName = (nameXVal, nameOVal) => {
     playerName1 = nameXVal; 
     playerName2 = nameOVal;
@@ -177,11 +178,13 @@ const checkCoordinates = (function() {
     if (isWinner || isTie) {                                                                          
       disableAllCells();
       displayWinner(isWinner ? winnerName : undefined);  
-
+      displayPlayerTurn(); 
+      
       if (isTie && !isWinner) {                                                     // Only account for tie if all cells have been filled, and no winner
         tieScore++;
         updateScore.tieScore(tieScore);
       };
+    
       updateScore.gameOverModal();
     } else {                                                                                    
       displayPlayerTurn(nextPlayerTurn, playerName1, playerName2);                  // If game still in progress, display who goes next          
@@ -312,6 +315,7 @@ const playRound = (function() {
   const tieGame = () => {
     if (totalCellsFilled === 8) return true;
   };
+  
   return {isWinner, tieGame};
 })();
 
@@ -356,14 +360,14 @@ function disableAllCells() {
 
 function displayWinner(hasWon) {
   if (hasWon) {
-    result.textContent = `${hasWon} won the game!`;
+    winnerDisplay.textContent = `${hasWon} won the game!`;
   } else {
-    result.textContent = "It's a tie";
+    winnerDisplay.textContent = "It's a tie";
   };
 };
 
 function displayPlayerTurn(turn, playerName1, playerName2) {
-  result.textContent = turn === "x" ? `X: ${playerName1}'s turn` 
+  displayTurn.textContent = turn === "x" ? `X: ${playerName1}'s turn` 
                        : turn === "o" ? `O: ${playerName2}'s turn` 
                        : "";
 };

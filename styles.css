@@ -84,7 +84,7 @@ span.error-text {
   backdrop-filter: blur(5px);
 }
 
-.result {
+.display-turn {
   border: 1px solid black;
   width: 170px;
   height: 20px;
@@ -150,6 +150,13 @@ dialog {
   height: 30px;
   width: 100px;
   cursor: pointer;
+}
+
+.winner-display {
+  color: white;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 1.5rem;
 }
 
 .addXStyle::after {

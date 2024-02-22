@@ -13,13 +13,13 @@
     <div class="players-input">
       <div class="x">
         <label for="playerX">Player <span>X</span></label>
-        <input type="text" id="playerX" placeholder="Enter a name">
+        <input type="text" id="playerX" placeholder="Enter a name" maxlength="30">
         <span class="error-text">Please enter a name</span>
       </div>
   
       <div class="o">
         <label for="playerO">Player <span>O</span></label>
-        <input type="text" id="playerO" placeholder="Enter a name">
+        <input type="text" id="playerO" placeholder="Enter a name" maxlength="30">
         <span class="error-text">Please enter a name</span>
       </div>
     </div>
@@ -28,7 +28,7 @@
   </div>
   
   <div class="text-output">
-    <div class="result"></div>
+    <div class="display-turn"></div>
   </div>
   <div class="board-container">
     <div class="default-border"></div>
@@ -49,6 +49,7 @@
   </div>
 
   <dialog>
+    <div class="winner-display"></div>
     <div class="modal-wrapper">
       <button class="play-again-btn">Play again</button>
       <button class="quit-btn">Exit</button>
