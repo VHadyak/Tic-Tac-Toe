@@ -1,17 +1,26 @@
 
+
+
 :root {
+
+}
+
+* {
   box-sizing: border-box;
 }
 
 body {
   display: flex;
-  min-height: 100vh;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
   gap: 20px;
 }
 
+/* Input prompts */
 .setup-wrapper {
   border: 1px solid black;
   padding: 50px;
@@ -91,6 +100,7 @@ span.error-text {
   text-align: center;
 }
 
+/* Tic tac toe board */
 .board-container {
   display: grid;
   grid-template-columns: repeat(3, 150px);
@@ -99,13 +109,14 @@ span.error-text {
   backdrop-filter: blur(5px);
 }
 
+/* Each cell */
+.default-border {
+  border: 1px solid black;
+}
+
 .score-wrapper {
   display: flex;
   gap: 70px;
-}
-
-.default-border {
-  border: 1px solid black;
 }
 
 .board-container > div:hover {
@@ -140,7 +151,7 @@ dialog {
   animation: fadeIn 0.7s ease; 
 }
 
-.modal-wrapper {
+.buttons-container {
   display: flex;
   gap: 30px;
 }
@@ -159,19 +170,16 @@ dialog {
   font-size: 1.5rem;
 }
 
-.addXStyle::after {
-  content: "X";
-}
-
+/* Marker style */
 .addXStyle {
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 3rem;
-}
-
-.addOStyle::after{
-  content: "O";
+  background-image: url(/img/xMark.svg);
+  background-repeat: no-repeat;
+  background-size: 50%;
+  background-position: center;
 }
 
 .addOStyle {
@@ -179,6 +187,10 @@ dialog {
   justify-content: center;
   align-items: center;
   font-size: 3rem;
+  background-image: url(/img/oMark.svg);
+  background-repeat: no-repeat;
+  background-size: 55%;
+  background-position: center;
 }
 
 .match-pattern {

@@ -29,7 +29,8 @@ const setupGame = (function() {
     const nameOVal = document.querySelector("#playerO").value; 
 
     if (!validateNames(nameXVal, nameOVal).invalidHandler()) {
-      return;                                                                       // If either input values are empty, or same input values, game setup does not proceed  
+      // If either input values are empty, or same input values, game setup does not proceed  
+      return;                                                                      
     } else {
       validateNames(nameXVal, nameOVal).clearErrorState();
     };
@@ -168,8 +169,8 @@ const checkCoordinates = (function() {
     // Store coordinates in playerXPos / playerOPos
     playerPos.push({row, col});                                                                  
 
-    const isWinner = playRound.isWinner(playerPos);
-    const isTie = playRound.tieGame();
+    const isWinner = checkPatterns.isWinner(playerPos);
+    const isTie = checkPatterns.tieGame();
 
     trackScore();
 
@@ -190,8 +191,8 @@ const checkCoordinates = (function() {
   };
 
   const trackScore = () => {
-    const xWinner = playRound.isWinner(playerXPos);
-    const oWinner = playRound.isWinner(playerOPos);
+    const xWinner = checkPatterns.isWinner(playerXPos);
+    const oWinner = checkPatterns.isWinner(playerOPos);
 
     if (xWinner) {
       scoreX++;
@@ -257,7 +258,7 @@ const checkCoordinates = (function() {
 })();
 
 // Check for winning patterns
-const playRound = (function() {
+const checkPatterns = (function() {
   const isWinner = (player) => {
     const rowCounts = [0, 0, 0];
     const colCounts = [0, 0, 0];
