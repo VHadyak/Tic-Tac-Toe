@@ -128,8 +128,6 @@ const gameBoard = (function() {
     // Remove the click event from the cell that has already been clicked
     e.target.removeEventListener("click", render);
 
-    console.log(`row ${row}, column ${col}`);
-    
     totalCellsFilled++;
   };
 
@@ -179,7 +177,7 @@ const checkCoordinates = (function() {
       disableAllCells();
       displayWinner(isWinner ? winnerName : undefined);  
       displayPlayerTurn(); 
-      
+
       if (isTie && !isWinner) {                                                     // Only account for tie if all cells have been filled, and no winner
         tieScore++;
         updateScore.tieScore(tieScore);
@@ -323,7 +321,12 @@ const playRound = (function() {
 const updateScore = (function() {
   const dialog = document.querySelector("dialog");
 
-  const gameOverModal = () => dialog.showModal();
+  const gameOverModal = () => {
+    setTimeout(() => {
+      dialog.showModal(); 
+    }, 1000);
+  };
+
   const closeModal = () => dialog.close();
 
   const playerXScore = (xScore, player1) => {
