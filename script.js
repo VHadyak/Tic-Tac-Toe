@@ -167,8 +167,8 @@ const checkCoordinates = (function() {
 
   const updatePlayerMove = (playerPos, winnerName, nextPlayerTurn, row, col) => {
     // Store coordinates in playerXPos / playerOPos
-    playerPos.push({row, col});                                                                  
-
+    playerPos.push({row, col});                   
+ 
     const isWinner = checkPatterns.isWinner(playerPos);
     const isTie = checkPatterns.tieGame();
 
@@ -363,15 +363,21 @@ function disableAllCells() {
 };
 
 function displayWinner(hasWon) {
+  let styleWinner = document.createElement("span");                    
+ 
   if (hasWon) {
-    winnerDisplay.textContent = `${hasWon} won the game!`;
+    winnerDisplay.textContent = `${hasWon} `;
+    styleWinner.textContent = `has won the game!`;
+    winnerDisplay.appendChild(styleWinner);   
   } else {
     winnerDisplay.textContent = "It's a tie";
   };
 };
 
 function displayPlayerTurn(turn, playerName1, playerName2) {
+  if (turn === "x" || "o") displayTurn.style.visibility = "visible";
+
   displayTurn.textContent = turn === "x" ? `X: ${playerName1}'s turn` 
                        : turn === "o" ? `O: ${playerName2}'s turn` 
-                       : "";
+                       : displayTurn.style.visibility = "hidden";
 };
