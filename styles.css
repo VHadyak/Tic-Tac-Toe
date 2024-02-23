@@ -22,6 +22,7 @@ body {
   font-family: var(--ttt-font);
   font-style: normal;
   background: var(--main-bg);
+  outline: 5px solid rgb(19, 19, 19);
 }
 
 /* Input prompts */
@@ -224,6 +225,40 @@ dialog {
 
 .winner-display span {
   color: white;
+}
+
+.footer {
+  position: absolute;
+  bottom: 10px;
+}
+
+a {
+  text-decoration: none;
+  color: rgb(43, 43, 43);
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  gap: 5px;
+  font-size: 1.1rem;
+}
+
+a span:hover {
+  color: rgb(9, 62, 69);
+}
+
+a img:hover {
+  transform: scale(1.2);
+}
+
+a:visited {
+  color: initial;
+}
+
+div img {
+  width: 20px;
+  height: 20px;
+  align-self: center;
+  transition: 0.3s;
 }
 
 /* Marker style */
