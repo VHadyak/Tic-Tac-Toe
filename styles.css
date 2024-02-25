@@ -3,7 +3,7 @@
 
 :root {
   --ttt-font: "Anta", sans-serif;
-  --main-bg: linear-gradient(90deg,#e52e71,#ff8a00);
+  --main-bg: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
 }
 
 * {
@@ -23,11 +23,22 @@ body {
   font-style: normal;
   background: var(--main-bg);
   outline: 5px solid rgb(19, 19, 19);
+  overflow: hidden;
+}
+
+h1 {
+  color: cyan;
+  display: block;
+  -webkit-text-stroke: 0.01rem black; 
+  -webkit-text-fill-color: rgb(177, 239, 245); 
+  font-size: clamp(2rem, 4vw, 2.9rem);
+  text-shadow: 0 0 2px black;
+  margin: 0;
 }
 
 /* Input prompts */
 .setup-wrapper {
-  border: 1px solid black;
+  border: 3px solid black;
   padding: 50px;
   display: flex;
   flex-direction: column;
@@ -46,14 +57,14 @@ body {
 
 input[type="text"]::placeholder {
   color: rgba(193, 190, 190, 0.801);
-  font-size: 1.2rem;
+  font-size: clamp(0.9rem, 3vw, 1.2rem);
 }
 
 .x, .o {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  font-size: 1.7rem;
+  font-size: clamp(1.3rem, 4vw, 1.7rem);
 }
 
 .players-input span {
@@ -62,14 +73,14 @@ input[type="text"]::placeholder {
 }
 
 .start {
- width: 170px;
- height: 50px;
- font-size: 1.2rem;
+ width: min(30vw, 170px);
+ height: min(9vw, 50px);
+ font-size: clamp(0.9rem, 3vw, 1.2rem);
  cursor: pointer;
  transition: transform .3s;
  border-radius: 20px;
  border: none;
- background-color: rgb(231, 222, 149);
+ background-color: rgb(208, 237, 249);
  box-shadow: 0 4px 2px -2px rgba(0, 0, 0, 0.5);
 }
 
@@ -80,10 +91,23 @@ input[type="text"]::placeholder {
 input[type=text]#playerX,
 input[type=text]#playerO {
   border: none;
-  border-bottom: 1px solid black;
-  font-size: 1.4rem;
+  border-bottom: 0.09rem solid black;
+  font-size: clamp(1.1rem, 4vw, 1.4rem);
   color: rgb(9, 89, 121);
   margin-top: 2px;
+}
+
+/* On Chrome prevent the background color change on auto-fill */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+
+/* Firefox */
+input:-moz-autofill {
+  box-shadow: 0 0 0 30px white inset !important;
 }
 
 input[type=text]#playerX.invalid-input-style,
@@ -97,9 +121,8 @@ input[type=text]#playerO:focus {
 }
 
 span.error-text {
-  color: red;
-  font-size: 1rem;
-  font-weight: 100;
+  color: rgba(248, 29, 29, 0.904);
+  font-size: clamp(0.7rem, 2vw, 1rem);
 }
 
 .error-text {
@@ -114,11 +137,12 @@ span.error-text {
 .display-turn {
   color: white;
   -webkit-text-stroke: 0.02rem black; 
-  -webkit-text-fill-color: rgb(143, 221, 228); 
+  -webkit-text-fill-color: rgb(117, 234, 245); 
   text-align: center;
-  font-size: 3rem;
+  font-size: calc(1.7rem + 0.7vw);
   font-weight: bold;
   visibility: visible;
+  text-shadow: 0 0 2px black;
 }
 
 /* Tic tac toe board */
@@ -127,22 +151,27 @@ span.error-text {
   grid-template-columns: repeat(3, 170px);
   grid-template-rows: repeat(3, 170px);
   gap: 10px;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(7px);
 }
 
 /* Each cell */
 .default-border {
-  border: 3px solid rgb(24, 17, 96);
+  border: 3px solid rgb(0, 0, 0);
+  border-radius: 10px;
 }
 
 .board-container > div {
   background-color: rgb(246, 246, 248);
 }
 
+.board-container > div:hover {
+  background-color: rgb(184, 222, 230);
+  cursor: pointer;
+}
+
 .score-wrapper {
   display: flex;
-  gap: 70px;
-  width: 500px;
+  gap: 20px;
   display: flex;
   justify-content: center;
 }
@@ -151,18 +180,14 @@ span.error-text {
 .player2-score, 
 .tie-score {
   border: 2px solid black;
-  font-size: 1.5rem;
+  font-size: clamp(1rem, 4vw, 1.5rem);
   padding: 8px;
-  min-width: 100px;
+  width: min(24vw, 160px);
   border-radius: 10px;
   color: rgb(0, 0, 0);
   background-color: rgb(213, 213, 233);
   overflow-wrap: break-word;
-}
-
-.board-container > div:hover {
-  background-color: rgb(196, 218, 224);
-  cursor: pointer;
+  text-align: center;
 }
 
 @keyframes fadeIn {
@@ -174,24 +199,30 @@ span.error-text {
   }
 }
 
+.board-container,
+.score-wrapper,
+.display-turn {
+  animation: fadeIn 0.5s ease; 
+}
+
 dialog::backdrop {
   background-image: linear-gradient(
     45deg,
     rgb(14, 14, 15),
     rgb(14, 14, 15)
   );
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 dialog {
-  border: 1px solid rgb(121, 135, 227);
-  background-color: rgb(0, 0, 0);
+  border: 1px solid rgb(43, 193, 234);
+  background-color: rgb(18, 6, 34);
   border-radius: 10px;
   max-width: 400px;
   padding: 50px;
   position: fixed;
   animation: fadeIn 0.7s ease; 
-  top: -72%;
+  top: -75%;
 }
 
 .buttons-container {
@@ -201,24 +232,26 @@ dialog {
 
 .play-again-btn,
 .quit-btn {
-  height: 40px;
+  height: min(7vw, 40px);
   width: 200px;
   cursor: pointer;
   border-radius: 10px;
   border: none;
-  font-size: 1.2rem;
+  font-size: clamp(0.9rem, 3vw, 1.2rem);
   background-color: rgb(157, 237, 240);
+  transition: transform .3s;
 }
 
 .play-again-btn:hover,
 .quit-btn:hover {
   background-color: rgb(96, 238, 243);
+  transform: scale(1.1);
 }
 
 .winner-display {
   text-align: center;
   margin-bottom: 30px;
-  font-size: 2rem;
+  font-size: calc(1.1rem + 0.5vw);
   overflow-wrap: break-word;
   color: rgb(97, 194, 232);
 }
@@ -234,16 +267,15 @@ dialog {
 
 a {
   text-decoration: none;
-  color: rgb(43, 43, 43);
   display: flex;
   justify-content: center;
   text-align: center;
   gap: 5px;
-  font-size: 1.1rem;
+  font-size: clamp(0.7rem, 3.5vw, 1.1rem);
 }
 
 a span:hover {
-  color: rgb(9, 62, 69);
+  color: rgb(69, 206, 224);
 }
 
 a img:hover {
@@ -255,8 +287,8 @@ a:visited {
 }
 
 div img {
-  width: 20px;
-  height: 20px;
+  width: min(4vw, 20px);
+  height: min(4vw, 20px);
   align-self: center;
   transition: 0.3s;
 }
@@ -267,7 +299,7 @@ div img {
   justify-content: center;
   align-items: center;
   font-size: 3rem;
-  background-image: url(/img/xMark.svg);
+  background-image: url(img/xMark.svg);
   background-repeat: no-repeat;
   background-size: 50%;
   background-position: center;
@@ -278,63 +310,235 @@ div img {
   justify-content: center;
   align-items: center;
   font-size: 3rem;
-  background-image: url(/img/oMark.svg);
+  background-image: url(img/oMark.svg);
   background-repeat: no-repeat;
   background-size: 50%;
   background-position: center;
 }
 
 .board-container > div.match-pattern {
-  background-color: rgb(185, 236, 221);
-  border: 5px solid rgba(42, 13, 88, 0.829);
+  background-color: rgb(44, 207, 248);
+  border: 5px solid rgba(21, 51, 62, 0.829);
+  border-radius: 10px;
 }
 
-.slider-thumb::before {
+.shapes {
   position: absolute;
-  content: "";
-  left: 27%;
-  top: 20%;
-  width: 450px;
-  height: 450px;
-  background: #17141d;
-  border-radius: 62% 47% 82% 35% / 45% 45% 80% 66%;
-  will-change: border-radius, transform, opacity;
-  animation: sliderShape 5s linear infinite;
-  display: block;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   z-index: -1;
-  -webkit-animation: sliderShape 5s linear infinite;
 }
 
-.slider-thumb2::before {
+.shapes li {
   position: absolute;
-  content: "";
-  right: 17%;
-  top: 55%;
-  width: 450px;
-  height: 450px;
-  background: #17141d;
-  border-radius: 62% 47% 82% 35% / 45% 45% 80% 66%;
-  will-change: border-radius, transform, opacity;
-  animation: sliderShape 5s linear infinite;
   display: block;
-  z-index: -1;
-  -webkit-animation: sliderShape 5s linear infinite;
+  list-style: none;
+  width: 30px;
+  height: 30px;
+  animation: animate 25s linear infinite;
+  bottom: -150px;
 }
 
-@keyframes sliderShape {
-  0%,100% {
-    border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
-    transform: translate3d(0, 0, 0) rotateZ(0.01deg);
+.shapes li:nth-child(1) {
+  left: 25%;
+  width: 80px;
+  height: 80px;
+  animation-delay: 0s;
+}
+
+.shapes li:nth-child(2) {
+  left: 10%;
+  width: 25px;
+  height: 25px;
+  animation-delay: 2s;
+  animation-duration: 12s;
+}
+
+.shapes li:nth-child(3) {
+  left: 70%;
+  width: 40px;
+  height: 40px;
+  animation-delay: 4s;
+}
+
+.shapes li:nth-child(4) {
+  left: 40%;
+  width: 60px;
+  height: 60px;
+  animation-delay: 0s;
+  animation-duration: 18s;
+}
+
+.shapes li:nth-child(5) {
+  left: 65%;
+  width: 25px;
+  height: 25px;
+  animation-delay: 0s;
+}
+
+.shapes li:nth-child(6) {
+  left: 75%;
+  width: 110px;
+  height: 110px;
+  animation-delay: 3s;
+}
+
+.shapes li:nth-child(7) {
+  left: 35%;
+  width: 150px;
+  height: 150px;
+  animation-delay: 7s;
+}
+
+.shapes li:nth-child(8) {
+  left: 50%;
+  width: 25px;
+  height: 25px;
+  animation-delay: 15s;
+  animation-duration: 45s;
+}
+
+.shapes li:nth-child(9) {
+  left: 20%;
+  width: 35px;
+  height: 35px;
+  animation-delay: 2s;
+  animation-duration: 35s;
+}
+
+.shapes li:nth-child(10) {
+  left: 85%;
+  width: 150px;
+  height: 150px;
+  animation-delay: 0s;
+  animation-duration: 11s;
+}
+
+.shapes li:nth-child(even) {
+  background-size: cover;
+  background-image: url(img/oMark.svg);
+}
+
+.shapes li:nth-child(odd) {
+  background-size: cover;
+  background-image: url(img/xMark.svg);
+}
+
+
+@keyframes animate {
+  0% {
+      transform: translateY(0) rotate(0deg);
+      opacity: 1;
   }
-  34% {
-    border-radius: 70% 30% 46% 54% / 30% 29% 71% 70%;
-    transform:  translate3d(0, 5px, 0) rotateZ(0.01deg);
+  
+  100% {
+      transform: translateY(-1000px) rotate(720deg);
+      opacity: 0;
   }
-  50% {
-    transform: translate3d(0, 0, 0) rotateZ(0.01deg);
+}
+
+@media only screen and (max-width: 768px) {
+  .shapes li {
+    width: 20px;
+    height: 20px;
   }
-  67% {
-    border-radius: 100% 60% 60% 100% / 100% 100% 60% 60% ;
-    transform: translate3d(0, -3px, 0) rotateZ(0.01deg);
+
+  .shapes li:nth-child(2) {
+    animation-duration: 7s;
+  }
+
+  .shapes li:nth-child(4) {
+    animation-duration: 8s; 
+  }
+
+  .shapes li:nth-child(8) {
+    animation-duration: 10s;
+  }
+
+  .shapes li:nth-child(9) {
+    animation-duration: 15s; 
+  }
+
+  .shapes li:nth-child(10) {
+    animation-duration: 10s;
+  }
+}
+
+
+/* Mobile */
+@media (max-width: 900px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .board-container {
+    grid-template-columns: repeat(3, 110px);
+    grid-template-rows: repeat(3, 110px);
+  }
+
+  .slider-thumb::before,
+  .slider-thumb2::before {
+    width: 200px;
+    height: 200px;
+  }
+
+  .slider-thumb::before {
+    left: 10%;
+    top: 10%;
+  }
+  
+  .slider-thumb2::before {
+    right: 4%;
+    top: 65%;
+  }
+
+  dialog {
+    max-width: 300px;
+    padding: 50px;
+    top: -67%;
+    padding: 30px;
+  }
+
+  .display-turn {
+   overflow-wrap: break-word;
+   width: 300px;
+  }
+
+  .winner-display {
+    margin-bottom: 20px;
+  }
+
+  .setup-wrapper {
+    padding: 40px;
+  }
+
+  .players-input {
+    width: 200px;
+  }
+
+  .start {
+    margin-top: -10px;
+  }
+}
+
+@media (hover: none) {
+  button {
+    background-color: inherit;
+    color: inherit;
+  }
+
+  button:active {
+    background-color: inherit;
+    color: inherit;
+    transform: none;
+  }
+
+  a img:hover,
+  a span:hover {
+    color: inherit;
+    transform: none;
   }
 }

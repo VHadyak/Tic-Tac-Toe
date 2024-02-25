@@ -9,6 +9,7 @@ const displayTurn = document.querySelector(".display-turn");
 const winnerDisplay = document.querySelector(".winner-display");
 const startBtn = document.querySelector(".start");
 const setupContainer = document.querySelector(".setup-wrapper");
+const title = document.querySelector("h1");
 
 const scoreDisplay = document.querySelector(".score-wrapper");
 const player1Score = document.querySelector(".player1-score");
@@ -39,6 +40,7 @@ const setupGame = (function() {
     boardContainer.style.display = "grid";
     displayTurn.style.display = "block";
     setupContainer.style.display = "none";
+    title.style.display = "none";
     
     displayPlayerTurn("x", nameXVal, nameOVal);                                     // After start game, "X" player goes first
     checkCoordinates.getName(nameXVal, nameOVal);           
@@ -239,6 +241,7 @@ const checkCoordinates = (function() {
     const player2Name = document.querySelector("#playerO"); 
 
     setupContainer.style.display = "flex";
+    title.style.display = "block";
     player1Name.value = "";
     player2Name.value = "";
 
@@ -370,7 +373,7 @@ function displayWinner(hasWon) {
     styleWinner.textContent = `has won the game!`;
     winnerDisplay.appendChild(styleWinner);   
   } else {
-    winnerDisplay.textContent = "It's a tie";
+    winnerDisplay.textContent = "It's a tie!";
   };
 };
 
