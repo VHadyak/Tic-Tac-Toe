@@ -8,6 +8,7 @@
 
 * {
   box-sizing: border-box;
+  -webkit-box-sizing: border-box; 
 }
 
 body {
@@ -23,7 +24,6 @@ body {
   font-style: normal;
   background: var(--main-bg);
   outline: 5px solid rgb(19, 19, 19);
-  overflow: hidden;
   position: relative;
 }
 
@@ -91,6 +91,8 @@ input[type="text"]::placeholder {
 
 input[type=text]#playerX,
 input[type=text]#playerO {
+  outline: none;
+  -webkit-appearance: none;
   border: none;
   border-top: 0;
   border-left: 0;
@@ -244,6 +246,7 @@ dialog {
   font-size: clamp(0.9rem, 3vw, 1.2rem);
   background-color: rgb(157, 237, 240);
   transition: transform .3s;
+  outline: none;
 }
 
 .play-again-btn:hover,
