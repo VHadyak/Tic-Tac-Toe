@@ -102,6 +102,7 @@ input[type=text]#playerO {
   touch-action: manipulation;
 }
 
+
 /* On Chrome prevent the background color change on auto-fill */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
@@ -514,6 +515,12 @@ div img {
 
   .footer {
     margin-bottom: 50px;
+  }
+  
+  input[type=text]#playerX,
+  input[type=text]#playerO {
+    padding-top: 5px;
+    margin-top: -2px;
   }
 }
 
