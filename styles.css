@@ -90,6 +90,7 @@ input[type="text"]::placeholder {
 
 input[type=text]#playerX,
 input[type=text]#playerO {
+  -webkit-appearance: none;
   border: none;
   border-bottom: 0.09rem solid black;
   font-size: clamp(1.1rem, 4vw, 1.4rem);
@@ -472,6 +473,7 @@ div img {
 @media (max-width: 900px) {
   body {
     overflow-x: hidden;
+    min-height: 100vh;
   }
 
   .board-container {
@@ -521,6 +523,10 @@ div img {
 
   .start {
     margin-top: -10px;
+  }
+
+  a span {
+    color: black;
   }
 }
 
