@@ -90,8 +90,6 @@ input[type="text"]::placeholder {
 
 input[type=text]#playerX,
 input[type=text]#playerO {
-  outline: none;
-  -webkit-appearance: none;
   border: none;
   border-bottom: 0.09rem solid black;
   font-size: clamp(1rem, 3vw, 1.4rem);
@@ -101,7 +99,6 @@ input[type=text]#playerO {
   height: 25px;
   touch-action: manipulation;
 }
-
 
 /* On Chrome prevent the background color change on auto-fill */
 input:-webkit-autofill,
@@ -123,6 +120,10 @@ input[type=text]#playerO.invalid-input-style {
 
 input[type=text]#playerX:focus,
 input[type=text]#playerO:focus {
+  outline: none;
+}
+
+.start:focus {
   outline: none;
 }
 
