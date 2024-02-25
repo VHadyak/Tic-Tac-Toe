@@ -489,7 +489,7 @@ div img {
   .display-turn {
    overflow-wrap: break-word;
    width: 300px;
-   margin-top: 150px;
+   margin-top: 50px;
   }
 
   .winner-display {
@@ -510,6 +510,10 @@ div img {
 
   a span {
     color: black;
+  }
+
+  .footer {
+    margin-bottom: 50px;
   }
 }
 
