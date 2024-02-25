@@ -12,6 +12,7 @@
 }
 
 body {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -23,19 +24,16 @@ body {
   font-family: var(--ttt-font);
   font-style: normal;
   background: var(--main-bg);
-  outline: 5px solid rgb(19, 19, 19);
-  position: relative;
   overflow-y: hidden;
 }
 
 h1 {
-  color: cyan;
   display: block;
-  -webkit-text-stroke: 0.01rem black; 
-  -webkit-text-fill-color: rgb(177, 239, 245); 
+  color: rgb(177, 239, 245); 
   font-size: clamp(2rem, 4vw, 2.9rem);
-  text-shadow: 0 0 2px black;
+  text-shadow: 0 0 4px black;
   margin: 0;
+  font-weight: 100;
 }
 
 /* Input prompts */
@@ -95,13 +93,12 @@ input[type=text]#playerO {
   outline: none;
   -webkit-appearance: none;
   border: none;
-  border-top: 0;
-  border-left: 0;
-  border-right: 0;
   border-bottom: 0.09rem solid black;
   font-size: clamp(1rem, 3vw, 1.4rem);
   color: rgb(9, 89, 121);
   margin-top: 2px;
+  padding: 0 2px 0 2px;
+  height: 25px;
 }
 
 /* On Chrome prevent the background color change on auto-fill */
@@ -142,14 +139,11 @@ span.error-text {
 }
 
 .display-turn {
-  color: white;
-  -webkit-text-stroke: 0.02rem black; 
-  -webkit-text-fill-color: rgb(117, 234, 245); 
+  color: rgb(117, 234, 245); 
   text-align: center;
   font-size: calc(1.7rem + 0.7vw);
-  font-weight: bold;
   visibility: visible;
-  text-shadow: 0 0 2px black;
+  text-shadow: 0 0 4px black;
 }
 
 /* Tic tac toe board */
@@ -449,7 +443,6 @@ div img {
 }
 
 @media only screen and (max-width: 768px) {
- 
   .shapes li:nth-child(2) {
     animation-duration: 7s;
   }
@@ -481,22 +474,6 @@ div img {
   .board-container {
     grid-template-columns: repeat(3, 110px);
     grid-template-rows: repeat(3, 110px);
-  }
-
-  .slider-thumb::before,
-  .slider-thumb2::before {
-    width: 200px;
-    height: 200px;
-  }
-
-  .slider-thumb::before {
-    left: 10%;
-    top: 10%;
-  }
-  
-  .slider-thumb2::before {
-    right: 4%;
-    top: 65%;
   }
 
   dialog {
