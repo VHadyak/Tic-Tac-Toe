@@ -94,7 +94,7 @@ input[type=text]#playerO {
   -webkit-appearance: none;
   border: none;
   border-bottom: 0.09rem solid black;
-  font-size: clamp(1rem, 3vw, 1.4rem);
+  font-size: clamp(0.9rem, 2vw, 1.4rem);
   color: rgb(9, 89, 121);
   margin-top: 2px;
   padding: 0 2px 0 2px;
@@ -127,6 +127,7 @@ input[type=text]#playerO:focus {
 span.error-text {
   color: rgba(248, 29, 29, 0.904);
   font-size: clamp(0.7rem, 2vw, 1rem);
+  font-weight: 100;
 }
 
 .error-text {
